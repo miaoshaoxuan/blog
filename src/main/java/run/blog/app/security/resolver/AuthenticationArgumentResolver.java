@@ -7,11 +7,11 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import run.blog.app.exception.AuthenticationException;
-import run.blog.app.security.authentication.Authentication;
 import run.blog.app.security.context.SecurityContextHolder;
-import run.blog.app.security.support.UserDetail;
+import run.blog.app.exception.AuthenticationException;
 import run.blog.app.model.entity.User;
+import run.blog.app.security.authentication.Authentication;
+import run.blog.app.security.support.UserDetail;
 
 import java.util.Optional;
 
@@ -31,9 +31,9 @@ public class AuthenticationArgumentResolver implements HandlerMethodArgumentReso
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         Class<?> parameterType = parameter.getParameterType();
-        return (Authentication.class.isAssignableFrom(parameterType) ||
-                UserDetail.class.isAssignableFrom(parameterType) ||
-                User.class.isAssignableFrom(parameterType));
+        return Authentication.class.isAssignableFrom(parameterType)
+                || UserDetail.class.isAssignableFrom(parameterType)
+                || User.class.isAssignableFrom(parameterType);
     }
 
     @Override

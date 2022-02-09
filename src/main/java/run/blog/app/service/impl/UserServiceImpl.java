@@ -1,7 +1,5 @@
 package run.blog.app.service.impl;
 
-import cn.hutool.core.text.StrBuilder;
-import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
@@ -9,17 +7,19 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import run.blog.app.exception.BadRequestException;
-import run.blog.app.exception.ForbiddenException;
-import run.blog.app.exception.NotFoundException;
-import run.blog.app.repository.UserRepository;
-import run.blog.app.cache.StringCacheStore;
+import run.blog.app.cache.AbstractStringCacheStore;
 import run.blog.app.cache.lock.CacheLock;
 import run.blog.app.event.logger.LogEvent;
 import run.blog.app.event.user.UserUpdatedEvent;
+import run.blog.app.exception.BadRequestException;
+import run.blog.app.exception.ForbiddenException;
+import run.blog.app.exception.NotFoundException;
+import run.blog.app.exception.ServiceException;
 import run.blog.app.model.entity.User;
 import run.blog.app.model.enums.LogType;
+import run.blog.app.model.enums.MFAType;
 import run.blog.app.model.params.UserParam;
+import run.blog.app.repository.UserRepository;
 import run.blog.app.service.UserService;
 import run.blog.app.service.base.AbstractCrudService;
 import run.blog.app.utils.DateUtils;
@@ -31,23 +31,24 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
- * UserService implementation class
+ * UserService implementation class.
  *
  * @author ryanwang
- * @date : 2019-03-14
+ * @author johnniang
+ * @date 2019-03-14
  */
 @Service
 public class UserServiceImpl extends AbstractCrudService<User, Integer> implements UserService {
 
     private final UserRepository userRepository;
 
-    private final StringCacheStore stringCacheStore;
+    private final AbstractStringCacheStore stringCacheStore;
 
     private final ApplicationEventPublisher eventPublisher;
 
     public UserServiceImpl(UserRepository userRepository,
-                           StringCacheStore stringCacheStore,
-                           ApplicationEventPublisher eventPublisher) {
+            AbstractStringCacheStore stringCacheStore,
+            ApplicationEventPublisher eventPublisher) {
         super(userRepository);
         this.userRepository = userRepository;
         this.stringCacheStore = stringCacheStore;
@@ -75,30 +76,17 @@ public class UserServiceImpl extends AbstractCrudService<User, Integer> implemen
 
     @Override
     public User getByUsernameOfNonNull(String username) {
-        return getByUsername(username).orElseThrow(() -> new NotFoundException("The username dose not exist").setErrorData(username));
+        return getByUsername(username).orElseThrow(() -> new NotFoundException("The username does not exist").setErrorData(username));
     }
 
-    /**
-     * Gets user by email.
-     *
-     * @param email email must not be blank
-     * @return an optional user
-     */
     @Override
     public Optional<User> getByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
-    /**
-     * Gets non null user by email.
-     *
-     * @param email email
-     * @return user info
-     * @throws NotFoundException throws when the username does not exist
-     */
     @Override
     public User getByEmailOfNonNull(String email) {
-        return getByEmail(email).orElseThrow(() -> new NotFoundException("The email dose not exist").setErrorData(email));
+        return getByEmail(email).orElseThrow(() -> new NotFoundException("The email does not exist").setErrorData(email));
     }
 
     @Override
@@ -193,14 +181,32 @@ public class UserServiceImpl extends AbstractCrudService<User, Integer> implemen
         Assert.hasText(plainPassword, "Plain password must not be blank");
 
         user.setPassword(BCrypt.hashpw(plainPassword, BCrypt.gensalt()));
+        user.setMfaType(MFAType.NONE);
+        user.setMfaKey(null);
     }
 
     @Override
-    public void setDefaultAvatar(User user) {
-        Assert.notNull(user, "User must not be null");
-        StrBuilder gravatar = new StrBuilder("//cn.gravatar.com/avatar/");
-        gravatar.append(SecureUtil.md5(user.getEmail()));
-        gravatar.append("?s=256&d=mm");
-        user.setAvatar(gravatar.toString());
+    public boolean verifyUser(String username, String password) {
+        User user = getCurrentUser().orElseThrow(() -> new ServiceException("未查询到博主信息"));
+        return user.getUsername().equals(username) && user.getEmail().equals(password);
+    }
+
+    @Override
+    @NonNull
+    public User updateMFA(@NonNull MFAType mfaType, String mfaKey, @NonNull Integer userId) {
+        Assert.notNull(mfaType, "MFA Type must not be null");
+
+        // get User
+        User user = getById(userId);
+        // set MFA
+        user.setMfaType(mfaType);
+        user.setMfaKey((MFAType.NONE == mfaType) ? null : mfaKey);
+        // Update this user
+        User updatedUser = update(user);
+        // Log it
+        eventPublisher.publishEvent(new LogEvent(this, updatedUser.getId().toString(), LogType.MFA_UPDATED, "MFA Type:" + mfaType));
+
+        return updatedUser;
+
     }
 }

@@ -4,15 +4,17 @@ import freemarker.template.Configuration;
 import freemarker.template.TemplateModelException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Example;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import run.blog.app.exception.ServiceException;
-import run.blog.app.repository.ThemeSettingRepository;
 import run.blog.app.handler.theme.config.support.Group;
 import run.blog.app.handler.theme.config.support.Item;
+import run.blog.app.exception.ServiceException;
 import run.blog.app.model.entity.ThemeSetting;
+import run.blog.app.repository.ThemeSettingRepository;
 import run.blog.app.service.ThemeService;
 import run.blog.app.service.ThemeSettingService;
 import run.blog.app.service.base.AbstractCrudService;
@@ -24,7 +26,7 @@ import java.util.*;
  * Theme setting service implementation.
  *
  * @author johnniang
- * @date 4/8/19
+ * @date 2019-04-08
  */
 @Slf4j
 @Service
@@ -37,8 +39,8 @@ public class ThemeSettingServiceImpl extends AbstractCrudService<ThemeSetting, I
     private final Configuration configuration;
 
     public ThemeSettingServiceImpl(ThemeSettingRepository themeSettingRepository,
-                                   ThemeService themeService,
-                                   Configuration configuration) {
+            ThemeService themeService,
+            Configuration configuration) {
         super(themeSettingRepository);
         this.themeSettingRepository = themeSettingRepository;
         this.themeService = themeService;
@@ -86,7 +88,10 @@ public class ThemeSettingServiceImpl extends AbstractCrudService<ThemeSetting, I
                     log.debug("Creating theme setting: [{}]", setting);
                     return setting;
                 });
-
+        // Determine whether the data already exists
+        if (themeSettingRepository.findOne(Example.of(themeSetting)).isPresent()) {
+            return null;
+        }
         // Save the theme setting
         return themeSettingRepository.save(themeSetting);
     }
@@ -158,6 +163,25 @@ public class ThemeSettingServiceImpl extends AbstractCrudService<ThemeSetting, I
         });
 
         return result;
+    }
+
+    @Override
+    public List<ThemeSetting> replaceUrl(String oldUrl, String newUrl) {
+        List<ThemeSetting> themeSettings = listAll();
+        List<ThemeSetting> replaced = new ArrayList<>();
+        themeSettings.forEach(themeSetting -> {
+            if (StringUtils.isNotEmpty(themeSetting.getValue())) {
+                themeSetting.setValue(themeSetting.getValue().replaceAll(oldUrl, newUrl));
+            }
+            replaced.add(themeSetting);
+        });
+        return updateInBatch(replaced);
+    }
+
+    @Override
+    @Transactional
+    public void deleteInactivated() {
+        themeSettingRepository.deleteByThemeIdIsNot(themeService.getActivatedThemeId());
     }
 
     /**

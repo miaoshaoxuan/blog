@@ -5,9 +5,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import run.blog.app.repository.LogRepository;
 import run.blog.app.model.dto.LogDTO;
 import run.blog.app.model.entity.Log;
+import run.blog.app.repository.LogRepository;
 import run.blog.app.service.LogService;
 import run.blog.app.service.base.AbstractCrudService;
 
@@ -15,7 +15,7 @@ import run.blog.app.service.base.AbstractCrudService;
  * LogService implementation class
  *
  * @author ryanwang
- * @date : 2019-03-14
+ * @date 2019-03-14
  */
 @Service
 public class LogServiceImpl extends AbstractCrudService<Log, Long> implements LogService {

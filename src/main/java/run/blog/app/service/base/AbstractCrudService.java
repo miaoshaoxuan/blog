@@ -6,8 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import run.blog.app.exception.NotFoundException;
 import run.blog.app.repository.base.BaseRepository;
+import run.blog.app.exception.NotFoundException;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -290,7 +290,7 @@ public abstract class AbstractCrudService<DOMAIN, ID> implements CrudService<DOM
     @Override
     public void removeInBatch(Collection<ID> ids) {
         if (CollectionUtils.isEmpty(ids)) {
-            log.warn(domainName + " id collection is empty");
+            log.debug(domainName + " id collection is empty");
             return;
         }
 
@@ -305,7 +305,7 @@ public abstract class AbstractCrudService<DOMAIN, ID> implements CrudService<DOM
     @Override
     public void removeAll(Collection<DOMAIN> domains) {
         if (CollectionUtils.isEmpty(domains)) {
-            log.warn(domainName + " collection is empty");
+            log.debug(domainName + " collection is empty");
             return;
         }
         repository.deleteInBatch(domains);

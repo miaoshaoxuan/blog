@@ -9,7 +9,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
-import run.blog.app.cache.StringCacheStore;
+import run.blog.app.cache.AbstractStringCacheStore;
 import run.blog.app.exception.FrequentAccessException;
 import run.blog.app.exception.ServiceException;
 import run.blog.app.utils.ServletUtils;
@@ -31,9 +31,9 @@ public class CacheLockInterceptor {
 
     private final static String CACHE_LOCK_VALUE = "locked";
 
-    private final StringCacheStore cacheStore;
+    private final AbstractStringCacheStore cacheStore;
 
-    public CacheLockInterceptor(StringCacheStore cacheStore) {
+    public CacheLockInterceptor(AbstractStringCacheStore cacheStore) {
         this.cacheStore = cacheStore;
     }
 

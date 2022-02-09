@@ -1,10 +1,10 @@
 package run.blog.app.model.params;
 
 import lombok.Data;
-import run.blog.app.model.entity.User;
-import run.blog.app.model.support.CreateCheck;
-import run.blog.app.model.support.UpdateCheck;
 import run.blog.app.model.dto.base.InputConverter;
+import run.blog.app.model.support.CreateCheck;
+import run.blog.app.model.entity.User;
+import run.blog.app.model.support.UpdateCheck;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

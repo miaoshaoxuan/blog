@@ -1,6 +1,6 @@
 package run.blog.app.security.handler;
 
-import run.blog.app.exception.HaloException;
+import run.blog.app.exception.AbstractHaloException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -23,5 +23,5 @@ public interface AuthenticationFailureHandler {
      * @throws IOException      io exception
      * @throws ServletException service exception
      */
-    void onFailure(HttpServletRequest request, HttpServletResponse response, HaloException exception) throws IOException, ServletException;
+    void onFailure(HttpServletRequest request, HttpServletResponse response, AbstractHaloException exception) throws IOException, ServletException;
 }

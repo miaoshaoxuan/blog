@@ -4,14 +4,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.transaction.annotation.Transactional;
 import run.blog.app.model.dto.post.BasePostDetailDTO;
 import run.blog.app.model.dto.post.BasePostMinimalDTO;
 import run.blog.app.model.dto.post.BasePostSimpleDTO;
 import run.blog.app.model.entity.BasePost;
 import run.blog.app.model.enums.PostStatus;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +17,8 @@ import java.util.Optional;
  * Base post service implementation.
  *
  * @author johnniang
- * @date 19-4-24
+ * @author ryanwang
+ * @date 2019-04-24
  */
 public interface BasePostService<POST extends BasePost> extends CrudService<POST, Integer> {
 
@@ -46,23 +45,33 @@ public interface BasePostService<POST extends BasePost> extends CrudService<POST
     long countByStatus(PostStatus status);
 
     /**
-     * Get post by url.
+     * Get post by slug.
      *
-     * @param url post url.
+     * @param slug post slug.
      * @return Post
      */
     @NonNull
-    POST getByUrl(@NonNull String url);
+    POST getBySlug(@NonNull String slug);
 
     /**
-     * Gets post by post status and url.
+     * Gets post by post status and slug.
      *
      * @param status post status must not be null
-     * @param url    post url must not be blank
+     * @param slug   post slug must not be blank
      * @return post info
      */
     @NonNull
-    POST getBy(@NonNull PostStatus status, @NonNull String url);
+    POST getBy(@NonNull PostStatus status, @NonNull String slug);
+
+    /**
+     * Gets post by post status and id.
+     *
+     * @param status post status must not be null
+     * @param id     post id must not be blank
+     * @return post info
+     */
+    @NonNull
+    POST getBy(@NonNull PostStatus status, @NonNull Integer id);
 
     /**
      * Lists all posts by post status.
@@ -76,40 +85,40 @@ public interface BasePostService<POST extends BasePost> extends CrudService<POST
     /**
      * Lists previous posts.
      *
-     * @param date date must not be null
+     * @param post post must not be null
      * @param size previous max post size
      * @return a list of previous post
      */
     @NonNull
-    List<POST> listPrePosts(@NonNull Date date, int size);
+    List<POST> listPrevPosts(@NonNull POST post, int size);
 
     /**
      * Lits next posts.
      *
-     * @param date date must not be null
+     * @param post post must not be null
      * @param size next max post size
      * @return a list of next post
      */
     @NonNull
-    List<POST> listNextPosts(@NonNull Date date, int size);
+    List<POST> listNextPosts(@NonNull POST post, int size);
 
     /**
      * Gets previous post.
      *
-     * @param date date must not be null
+     * @param post post must not be null
      * @return an optional post
      */
     @NonNull
-    Optional<POST> getPrePost(@NonNull Date date);
+    Optional<POST> getPrevPost(@NonNull POST post);
 
     /**
      * Gets next post.
      *
-     * @param date date must not be null
+     * @param post post must not be null
      * @return an optional post
      */
     @NonNull
-    Optional<POST> getNextPost(@NonNull Date date);
+    Optional<POST> getNextPost(@NonNull POST post);
 
     /**
      * Pages latest posts.
@@ -154,7 +163,6 @@ public interface BasePostService<POST extends BasePost> extends CrudService<POST
      * @param visits visits must not be less than 1
      * @param postId post id must not be null
      */
-    @Transactional
     void increaseVisit(long visits, @NonNull Integer postId);
 
     /**
@@ -163,7 +171,6 @@ public interface BasePostService<POST extends BasePost> extends CrudService<POST
      * @param likes  likes must not be less than 1
      * @param postId post id must not be null
      */
-    @Transactional
     void increaseLike(long likes, @NonNull Integer postId);
 
     /**
@@ -171,7 +178,6 @@ public interface BasePostService<POST extends BasePost> extends CrudService<POST
      *
      * @param postId post id must not be null
      */
-    @Transactional
     void increaseVisit(@NonNull Integer postId);
 
     /**
@@ -179,7 +185,6 @@ public interface BasePostService<POST extends BasePost> extends CrudService<POST
      *
      * @param postId post id must not be null
      */
-    @Transactional
     void increaseLike(@NonNull Integer postId);
 
     /**
@@ -200,24 +205,114 @@ public interface BasePostService<POST extends BasePost> extends CrudService<POST
     @NonNull
     POST filterIfEncrypt(@NonNull POST post);
 
+    /**
+     * Convert POST to minimal dto.
+     *
+     * @param post post must not be null.
+     * @return minimal dto.
+     */
     @NonNull
     BasePostMinimalDTO convertToMinimal(@NonNull POST post);
 
+    /**
+     * Convert list of POST to minimal dto of list.
+     *
+     * @param posts posts must not be null.
+     * @return a list of minimal dto.
+     */
     @NonNull
     List<BasePostMinimalDTO> convertToMinimal(@Nullable List<POST> posts);
 
+    /**
+     * Convert page of POST to minimal dto of page.
+     *
+     * @param postPage postPage must not be null.
+     * @return a page of minimal dto.
+     */
     @NonNull
     Page<BasePostMinimalDTO> convertToMinimal(@NonNull Page<POST> postPage);
 
+    /**
+     * Convert POST to simple dto.
+     *
+     * @param post post must not be null.
+     * @return simple dto.
+     */
     @NonNull
     BasePostSimpleDTO convertToSimple(@NonNull POST post);
 
+    /**
+     * Convert list of POST to list of simple dto.
+     *
+     * @param posts posts must not be null.
+     * @return a list of simple dto.
+     */
     @NonNull
     List<BasePostSimpleDTO> convertToSimple(@Nullable List<POST> posts);
 
+    /**
+     * Convert page of POST to page of simple dto.
+     *
+     * @param postPage postPage must not be null.
+     * @return a page of simple dto.
+     */
     @NonNull
     Page<BasePostSimpleDTO> convertToSimple(@NonNull Page<POST> postPage);
 
+    /**
+     * Convert POST to detail dto.
+     *
+     * @param post post must not be null.
+     * @return detail dto.
+     */
     @NonNull
     BasePostDetailDTO convertToDetail(@NonNull POST post);
+
+    /**
+     * Updates draft content.
+     *
+     * @param content draft content could be blank
+     * @param postId  post id must not be null
+     * @return updated post
+     */
+    @NonNull
+    POST updateDraftContent(@Nullable String content, @NonNull Integer postId);
+
+    /**
+     * Updates post status.
+     *
+     * @param status post status must not be null
+     * @param postId post id must not be null
+     * @return updated post
+     */
+    @NonNull
+    POST updateStatus(@NonNull PostStatus status, @NonNull Integer postId);
+
+    /**
+     * Updates post status by ids.
+     *
+     * @param ids    post ids must not be null
+     * @param status post status must not be null
+     * @return updated posts
+     */
+    @NonNull
+    List<POST> updateStatusByIds(@NonNull List<Integer> ids, @NonNull PostStatus status);
+
+    /**
+     * Replace post blog url in batch.
+     *
+     * @param oldUrl old blog url.
+     * @param newUrl new blog url.
+     * @return replaced posts.
+     */
+    @NonNull
+    List<BasePostDetailDTO> replaceUrl(@NonNull String oldUrl, @NonNull String newUrl);
+
+    /**
+     * Generate description.
+     *
+     * @param content html content must not be null.
+     * @return description
+     */
+    String generateDescription(@NonNull String content);
 }

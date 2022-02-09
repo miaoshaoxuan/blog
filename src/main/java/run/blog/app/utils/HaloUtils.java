@@ -1,25 +1,96 @@
 package run.blog.app.utils;
 
+import cn.hutool.core.util.URLUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+import run.blog.app.model.support.HaloConst;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
 
-import static run.blog.app.model.support.HaloConst.FILE_SEPARATOR;
-
 /**
  * Common utils
  *
  * @author ryanwang
- * @date : 2017/12/22
+ * @author johnniang
+ * @date 2017-12-22
  */
 @Slf4j
 public class HaloUtils {
+
+    public static final String URL_SEPARATOR = "/";
+    private static final String RE_HTML_MARK = "(<[^<]*?>)|(<[\\s]*?/[^<]*?>)|(<[^<]*?/[\\s]*?>)";
+
+    @NonNull
+    public static String ensureBoth(@NonNull String string, @NonNull String bothfix) {
+        return ensureBoth(string, bothfix, bothfix);
+    }
+
+    @NonNull
+    public static String ensureBoth(@NonNull String string, @NonNull String prefix, @NonNull String suffix) {
+        return ensureSuffix(ensurePrefix(string, prefix), suffix);
+    }
+
+    /**
+     * Ensures the string contain prefix.
+     *
+     * @param string string must not be blank
+     * @param prefix prefix must not be blank
+     * @return string contain prefix specified
+     */
+    @NonNull
+    public static String ensurePrefix(@NonNull String string, @NonNull String prefix) {
+        Assert.hasText(string, "String must not be blank");
+        Assert.hasText(prefix, "Prefix must not be blank");
+
+        return prefix + StringUtils.removeStart(string, prefix);
+    }
+
+
+    /**
+     * Ensures the string contain suffix.
+     *
+     * @param string string must not be blank
+     * @param suffix suffix must not be blank
+     * @return string contain suffix specified
+     */
+    @NonNull
+    public static String ensureSuffix(@NonNull String string, @NonNull String suffix) {
+        Assert.hasText(string, "String must not be blank");
+        Assert.hasText(suffix, "Suffix must not be blank");
+
+        return StringUtils.removeEnd(string, suffix) + suffix;
+    }
+
+    /**
+     * Composites partial url to full http url.
+     *
+     * @param partUrls partial urls must not be empty
+     * @return full url
+     */
+    public static String compositeHttpUrl(@NonNull String... partUrls) {
+        Assert.notEmpty(partUrls, "Partial url must not be blank");
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < partUrls.length; i++) {
+            String partUrl = partUrls[i];
+            if (StringUtils.isBlank(partUrl)) {
+                continue;
+            }
+            partUrl = StringUtils.removeStart(partUrl, URL_SEPARATOR);
+            partUrl = StringUtils.removeEnd(partUrl, URL_SEPARATOR);
+            if (i != 0) {
+                builder.append(URL_SEPARATOR);
+            }
+            builder.append(partUrl);
+        }
+
+        return builder.toString();
+    }
 
     /**
      * Desensitizes the plain text.
@@ -68,7 +139,7 @@ public class HaloUtils {
     public static String changeFileSeparatorToUrlSeparator(@NonNull String pathname) {
         Assert.hasText(pathname, "Path name must not be blank");
 
-        return pathname.replace(FILE_SEPARATOR, "/");
+        return pathname.replace(HaloConst.FILE_SEPARATOR, "/");
     }
 
     /**
@@ -162,19 +233,21 @@ public class HaloUtils {
     }
 
     /**
-     * Normalize url.
+     * Normalize url
      *
-     * @param url url must not be blank
-     * @return normalized url
+     * @param originalUrl original url
+     * @return normalized url.
      */
     @NonNull
-    public static String normalizeUrl(@NonNull String url) {
-        Assert.hasText(url, "Url must not be blank");
+    public static String normalizeUrl(@NonNull String originalUrl) {
+        Assert.hasText(originalUrl, "Original Url must not be blank");
 
-        StringUtils.removeEnd(url, "html");
-        StringUtils.removeEnd(url, "htm");
+        if (StringUtils.startsWithAny(originalUrl, URL_SEPARATOR, HaloConst.PROTOCOL_HTTPS, HaloConst.PROTOCOL_HTTP)
+                && !StringUtils.startsWith(originalUrl, "//")) {
+            return originalUrl;
+        }
 
-        return SlugUtils.slugify(url);
+        return URLUtil.normalize(originalUrl);
     }
 
     /**
@@ -190,5 +263,18 @@ public class HaloUtils {
             machineAddress = InetAddress.getLoopbackAddress();
         }
         return machineAddress.getHostAddress();
+    }
+
+    /**
+     * Clean all html tag
+     *
+     * @param content html document
+     * @return text before cleaned
+     */
+    public static String cleanHtmlTag(String content) {
+        if (StringUtils.isEmpty(content)) {
+            return StringUtils.EMPTY;
+        }
+        return content.replaceAll(RE_HTML_MARK, StringUtils.EMPTY);
     }
 }

@@ -4,19 +4,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
-import run.blog.app.service.base.CrudService;
 import run.blog.app.model.dto.PhotoDTO;
 import run.blog.app.model.entity.Photo;
 import run.blog.app.model.params.PhotoParam;
 import run.blog.app.model.params.PhotoQuery;
 import run.blog.app.model.vo.PhotoTeamVO;
+import run.blog.app.service.base.CrudService;
 
 import java.util.List;
 
 /**
- * Photo service.
+ * Photo service interface.
  *
  * @author johnniang
+ * @author ryanwang
+ * @date 2019-03-14
  */
 public interface PhotoService extends CrudService<Photo, Integer> {
 
@@ -48,6 +50,14 @@ public interface PhotoService extends CrudService<Photo, Integer> {
     /**
      * Pages photo output dtos.
      *
+     * @param pageable page info must not be null
+     * @return a page of photo output dto
+     */
+    Page<PhotoDTO> pageBy(@NonNull Pageable pageable);
+
+    /**
+     * Pages photo output dtos.
+     *
      * @param pageable   page info must not be null
      * @param photoQuery photoQuery
      * @return a page of photo output dto
@@ -63,4 +73,20 @@ public interface PhotoService extends CrudService<Photo, Integer> {
      */
     @NonNull
     Photo createBy(@NonNull PhotoParam photoParam);
+
+    /**
+     * List all teams.
+     *
+     * @return list of teams
+     */
+    List<String> listAllTeams();
+
+    /**
+     * Replace photo url in batch.
+     *
+     * @param oldUrl old blog url.
+     * @param newUrl new blog url.
+     * @return replaced photos.
+     */
+    List<PhotoDTO> replaceUrl(@NonNull String oldUrl, @NonNull String newUrl);
 }

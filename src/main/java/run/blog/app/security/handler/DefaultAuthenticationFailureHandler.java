@@ -5,12 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
-import run.blog.app.exception.HaloException;
+import run.blog.app.exception.AbstractHaloException;
 import run.blog.app.model.support.BaseResponse;
 import run.blog.app.utils.ExceptionUtils;
 import run.blog.app.utils.JsonUtils;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -32,9 +31,9 @@ public class DefaultAuthenticationFailureHandler implements AuthenticationFailur
     }
 
     @Override
-    public void onFailure(HttpServletRequest request, HttpServletResponse response, HaloException exception) throws IOException, ServletException {
+    public void onFailure(HttpServletRequest request, HttpServletResponse response, AbstractHaloException exception) throws IOException {
         log.warn("Handle unsuccessful authentication, ip: [{}]", ServletUtil.getClientIP(request));
-        log.error("Authentication failure", exception);
+        log.error("Authentication failure: [{}], status: [{}], data: [{}]", exception.getMessage(), exception.getStatus(), exception.getErrorData());
 
         BaseResponse<Object> errorDetail = new BaseResponse<>();
 

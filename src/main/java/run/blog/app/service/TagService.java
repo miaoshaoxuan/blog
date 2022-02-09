@@ -2,28 +2,38 @@ package run.blog.app.service;
 
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import run.blog.app.service.base.CrudService;
 import run.blog.app.model.dto.TagDTO;
 import run.blog.app.model.entity.Tag;
+import run.blog.app.service.base.CrudService;
 
 import java.util.List;
 
-
 /**
- * Tag service.
+ * Tag service interface.
  *
  * @author johnniang
+ * @author ryanwang
+ * @date 2019-03-14
  */
 public interface TagService extends CrudService<Tag, Integer> {
 
     /**
-     * Get tag by slug name
+     * Get tag by slug
      *
-     * @param slugName slug name
+     * @param slug slug
      * @return Tag
      */
     @NonNull
-    Tag getBySlugNameOfNonNull(@NonNull String slugName);
+    Tag getBySlugOfNonNull(@NonNull String slug);
+
+    /**
+     * Get tag by slug
+     *
+     * @param slug slug
+     * @return tag
+     */
+    @NonNull
+    Tag getBySlug(@NonNull String slug);
 
     /**
      * Get tag by tag name.

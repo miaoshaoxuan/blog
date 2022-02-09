@@ -2,8 +2,9 @@ package run.blog.app.repository;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import run.blog.app.repository.base.BaseRepository;
+import org.springframework.data.jpa.repository.Query;
 import run.blog.app.model.entity.Photo;
+import run.blog.app.repository.base.BaseRepository;
 
 import java.util.List;
 
@@ -11,6 +12,8 @@ import java.util.List;
  * Photo repository.
  *
  * @author johnniang
+ * @author ryanwang
+ * @date 2019-04-03
  */
 public interface PhotoRepository extends BaseRepository<Photo, Integer>, JpaSpecificationExecutor<Photo> {
 
@@ -22,4 +25,12 @@ public interface PhotoRepository extends BaseRepository<Photo, Integer>, JpaSpec
      * @return list of photo
      */
     List<Photo> findByTeam(String team, Sort sort);
+
+    /**
+     * Find all photo teams.
+     *
+     * @return list of teams.
+     */
+    @Query(value = "select distinct p.team from Photo p")
+    List<String> findAllTeams();
 }

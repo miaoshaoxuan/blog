@@ -11,11 +11,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMethod;
-import run.blog.app.security.filter.AdminAuthenticationFilter;
-import run.blog.app.security.filter.ApiAuthenticationFilter;
-import run.blog.app.security.support.UserDetail;
 import run.blog.app.config.properties.HaloProperties;
 import run.blog.app.model.entity.User;
+import run.blog.app.model.support.HaloConst;
+import run.blog.app.security.support.UserDetail;
 import springfox.documentation.builders.*;
 import springfox.documentation.schema.AlternateTypeRule;
 import springfox.documentation.schema.AlternateTypeRuleConvention;
@@ -33,7 +32,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static run.blog.app.model.support.HaloConst.HALO_VERSION;
 import static springfox.documentation.schema.AlternateTypeRules.newRule;
 
 /**
@@ -80,7 +78,7 @@ public class SwaggerConfiguration {
             log.debug("Doc has been disabled");
         }
 
-        return buildApiDocket("run.blog.app.admin",
+        return buildApiDocket("run.blog.app.admin.api",
                 "run.blog.app.controller.admin",
                 "/api/admin/**")
                 .securitySchemes(adminApiKeys())
@@ -123,8 +121,8 @@ public class SwaggerConfiguration {
 
     private List<ApiKey> adminApiKeys() {
         return Arrays.asList(
-                new ApiKey("Token from header", AdminAuthenticationFilter.ADMIN_TOKEN_HEADER_NAME, In.HEADER.name()),
-                new ApiKey("Token from query", AdminAuthenticationFilter.ADMIN_TOKEN_QUERY_NAME, In.QUERY.name())
+                new ApiKey("Token from header", HaloConst.ADMIN_TOKEN_HEADER_NAME, In.HEADER.name()),
+                new ApiKey("Token from query", HaloConst.ADMIN_TOKEN_QUERY_NAME, In.QUERY.name())
         );
     }
 
@@ -139,33 +137,41 @@ public class SwaggerConfiguration {
 
     private List<ApiKey> contentApiKeys() {
         return Arrays.asList(
-                new ApiKey("Access key from header", ApiAuthenticationFilter.API_ACCESS_KEY_HEADER_NAME, In.HEADER.name()),
-                new ApiKey("Access key from query", ApiAuthenticationFilter.API_ACCESS_KEY_QUERY_NAME, In.QUERY.name())
+                new ApiKey("Access key from header", HaloConst.API_ACCESS_KEY_HEADER_NAME, In.HEADER.name()),
+                new ApiKey("Access key from query", HaloConst.API_ACCESS_KEY_QUERY_NAME, In.QUERY.name())
         );
     }
 
     private List<SecurityContext> contentSecurityContext() {
         return Collections.singletonList(
                 SecurityContext.builder()
-                        .securityReferences(defaultAuth())
+                        .securityReferences(contentApiAuth())
                         .forPaths(PathSelectors.regex("/api/content/.*"))
                         .build()
         );
     }
 
     private List<SecurityReference> defaultAuth() {
-        AuthorizationScope[] authorizationScopes = {new AuthorizationScope("global", "accessEverything")};
+        AuthorizationScope[] authorizationScopes = {new AuthorizationScope("Admin api", "Access admin api")};
         return Arrays.asList(new SecurityReference("Token from header", authorizationScopes),
                 new SecurityReference("Token from query", authorizationScopes));
+    }
+
+    private List<SecurityReference> contentApiAuth() {
+        AuthorizationScope[] authorizationScopes = {new AuthorizationScope("content api", "Access content api")};
+        return Arrays.asList(new SecurityReference("Access key from header", authorizationScopes),
+                new SecurityReference("Access key from query", authorizationScopes));
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
                 .title("Halo API Documentation")
                 .description("Documentation for Halo API")
-                .version(HALO_VERSION)
+                .version(HaloConst.HALO_VERSION)
                 .termsOfServiceUrl("https://github.com/halo-dev")
-                .contact(new Contact("RYAN0UP", "https://ryanc.cc/", "i#ryanc.cc"))
+                .contact(new Contact("halo-dev", "https://github.com/halo-dev/halo/issues", "i#ryanc.cc"))
+                .license("GNU General Public License v3.0")
+                .licenseUrl("https://github.com/halo-dev/halo/blob/master/LICENSE")
                 .build();
     }
 

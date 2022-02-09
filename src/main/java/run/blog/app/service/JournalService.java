@@ -4,12 +4,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import run.blog.app.service.base.CrudService;
 import run.blog.app.model.dto.JournalDTO;
 import run.blog.app.model.dto.JournalWithCmtCountDTO;
 import run.blog.app.model.entity.Journal;
+import run.blog.app.model.enums.JournalType;
 import run.blog.app.model.params.JournalParam;
 import run.blog.app.model.params.JournalQuery;
+import run.blog.app.service.base.CrudService;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
  *
  * @author johnniang
  * @author ryanwang
- * @date 19-4-24
+ * @date 2019-04-24
  */
 public interface JournalService extends CrudService<Journal, Integer> {
 
@@ -30,6 +31,14 @@ public interface JournalService extends CrudService<Journal, Integer> {
      */
     @NonNull
     Journal createBy(@NonNull JournalParam journalParam);
+
+    /**
+     * Updates a journal.
+     *
+     * @param journal journal must not be null
+     * @return updated journal
+     */
+    Journal updateBy(@NonNull Journal journal);
 
     /**
      * Gets latest journals.
@@ -48,6 +57,16 @@ public interface JournalService extends CrudService<Journal, Integer> {
      */
     @NonNull
     Page<Journal> pageBy(@NonNull JournalQuery journalQuery, @NonNull Pageable pageable);
+
+    /**
+     * Lists by type.
+     *
+     * @param type     journal type must not be null
+     * @param pageable page info must not be null
+     * @return a page of journal
+     */
+    @NonNull
+    Page<Journal> pageBy(@NonNull JournalType type, @NonNull Pageable pageable);
 
     /**
      * Converts to journal dto.

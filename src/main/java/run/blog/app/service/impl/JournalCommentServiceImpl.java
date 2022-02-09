@@ -7,12 +7,12 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import run.blog.app.exception.NotFoundException;
-import run.blog.app.repository.JournalCommentRepository;
-import run.blog.app.repository.JournalRepository;
 import run.blog.app.model.dto.JournalDTO;
 import run.blog.app.model.entity.Journal;
 import run.blog.app.model.entity.JournalComment;
 import run.blog.app.model.vo.JournalCommentWithJournalVO;
+import run.blog.app.repository.JournalCommentRepository;
+import run.blog.app.repository.JournalRepository;
 import run.blog.app.service.JournalCommentService;
 import run.blog.app.service.OptionService;
 import run.blog.app.service.UserService;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * Journal comment service implementation.
  *
  * @author johnniang
- * @date 19-4-25
+ * @date 2019-04-25
  */
 @Service
 public class JournalCommentServiceImpl extends BaseCommentServiceImpl<JournalComment> implements JournalCommentService {
@@ -38,9 +38,9 @@ public class JournalCommentServiceImpl extends BaseCommentServiceImpl<JournalCom
     private final JournalRepository journalRepository;
 
     public JournalCommentServiceImpl(JournalCommentRepository journalCommentRepository,
-                                     OptionService optionService,
-                                     UserService userService,
-                                     ApplicationEventPublisher eventPublisher, JournalRepository journalRepository) {
+            OptionService optionService,
+            UserService userService,
+            ApplicationEventPublisher eventPublisher, JournalRepository journalRepository) {
         super(journalCommentRepository, optionService, userService, eventPublisher);
         this.journalCommentRepository = journalCommentRepository;
         this.journalRepository = journalRepository;
@@ -49,7 +49,7 @@ public class JournalCommentServiceImpl extends BaseCommentServiceImpl<JournalCom
     @Override
     public void validateTarget(Integer journalId) {
         if (!journalRepository.existsById(journalId)) {
-            throw new NotFoundException("该日志不存在或已删除").setErrorData(journalId);
+            throw new NotFoundException("查询不到该日志信息").setErrorData(journalId);
         }
     }
 

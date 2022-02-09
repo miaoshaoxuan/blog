@@ -1,8 +1,10 @@
 package run.blog.app.model.entity;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -12,15 +14,19 @@ import java.util.Objects;
  *
  * @author johnniang
  */
-@Entity
-@Table(name = "post_categories")
-@Data
+@Getter
+@Setter
 @ToString(callSuper = true)
-@EqualsAndHashCode(callSuper=false)
+@RequiredArgsConstructor
+@Entity
+@Table(name = "post_categories", indexes = {
+        @Index(name = "post_categories_post_id", columnList = "post_id"),
+        @Index(name = "post_categories_category_id", columnList = "category_id")})
 public class PostCategory extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "custom-id")
+    @GenericGenerator(name = "custom-id", strategy = "run.blog.app.model.entity.support.CustomIdGenerator")
     private Integer id;
 
     /**
@@ -35,17 +41,14 @@ public class PostCategory extends BaseEntity {
     @Column(name = "post_id")
     private Integer postId;
 
-
-    @Override
-    public void prePersist() {
-        super.prePersist();
-        id = null;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         PostCategory that = (PostCategory) o;
         return categoryId.equals(that.categoryId) &&
                 postId.equals(that.postId);

@@ -1,8 +1,8 @@
 package run.blog.app.repository;
 
 import org.springframework.lang.NonNull;
-import run.blog.app.repository.base.BaseRepository;
 import run.blog.app.model.entity.ThemeSetting;
+import run.blog.app.repository.base.BaseRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,4 +42,18 @@ public interface ThemeSettingRepository extends BaseRepository<ThemeSetting, Int
      */
     @NonNull
     Optional<ThemeSetting> findByThemeIdAndKey(@NonNull String themeId, @NonNull String key);
+
+    /**
+     * Deletes inactivated theme settings.
+     *
+     * @param activatedThemeId activated theme id.
+     */
+    void deleteByThemeIdIsNot(@NonNull String activatedThemeId);
+
+    /**
+     * Deletes settings by theme id.
+     *
+     * @param themeId theme id.
+     */
+    void deleteByThemeId(String themeId);
 }

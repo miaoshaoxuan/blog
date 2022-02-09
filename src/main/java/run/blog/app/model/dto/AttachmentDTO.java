@@ -1,9 +1,9 @@
 package run.blog.app.model.dto;
 
 import lombok.Data;
+import run.blog.app.model.dto.base.OutputConverter;
 import run.blog.app.model.entity.Attachment;
 import run.blog.app.model.enums.AttachmentType;
-import run.blog.app.model.dto.base.OutputConverter;
 
 import java.util.Date;
 

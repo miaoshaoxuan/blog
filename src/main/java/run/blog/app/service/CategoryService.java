@@ -4,10 +4,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
-import run.blog.app.service.base.CrudService;
 import run.blog.app.model.dto.CategoryDTO;
 import run.blog.app.model.entity.Category;
 import run.blog.app.model.vo.CategoryVO;
+import run.blog.app.service.base.CrudService;
 
 import java.util.List;
 
@@ -15,7 +15,10 @@ import java.util.List;
  * Category service.
  *
  * @author johnniang
+ * @author ryanwang
+ * @date 2019-03-14
  */
+@Transactional(readOnly = true)
 public interface CategoryService extends CrudService<Category, Integer> {
 
     /**
@@ -28,13 +31,22 @@ public interface CategoryService extends CrudService<Category, Integer> {
     List<CategoryVO> listAsTree(@NonNull Sort sort);
 
     /**
-     * Get category by slug name
+     * Get category by slug
      *
-     * @param slugName slug name
+     * @param slug slug
      * @return Category
      */
     @NonNull
-    Category getBySlugName(@NonNull String slugName);
+    Category getBySlug(@NonNull String slug);
+
+    /**
+     * Get category by slug
+     *
+     * @param slug slug
+     * @return Category
+     */
+    @NonNull
+    Category getBySlugOfNonNull(String slug);
 
     /**
      * Get Category by name.
@@ -53,6 +65,13 @@ public interface CategoryService extends CrudService<Category, Integer> {
     @Transactional
     void removeCategoryAndPostCategoryBy(Integer categoryId);
 
+    /**
+     * List categories by parent id.
+     *
+     * @param id parent id.
+     * @return list of category.
+     */
+    List<Category> listByParentId(@NonNull Integer id);
 
     /**
      * Converts to category dto.

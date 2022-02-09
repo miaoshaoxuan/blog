@@ -1,25 +1,40 @@
 package run.blog.app.model.properties;
 
+import run.blog.app.model.enums.PostEditorType;
+
 /**
  * Other properties.
  *
  * @author johnniang
- * @date 4/1/19
+ * @author ryanwang
+ * @date 2019-04-01
  */
 public enum OtherProperties implements PropertyEnum {
 
-    API_ENABLED("api_enabled", Boolean.class, "false"),
+    /**
+     * Global custom head.
+     */
+    CUSTOM_HEAD("blog_custom_head", String.class, ""),
 
-    API_ACCESS_KEY("api_access_key", String.class, ""),
+    /**
+     * Content page(post,sheet) custom head.
+     */
+    CUSTOM_CONTENT_HEAD("blog_custom_content_head", String.class, ""),
 
-    CUSTOM_HEAD("blog_custom_head",String.class,""),
-
+    /**
+     * Statistics platform code,such as Google Analytics.
+     */
     STATISTICS_CODE("blog_statistics_code", String.class, ""),
 
     /**
-     * 是否禁止爬虫
+     * Global absolute path enabled.
      */
-    SPIDER_DISABLED("spider_disabled", Boolean.class, "false");
+    GLOBAL_ABSOLUTE_PATH_ENABLED("global_absolute_path_enabled", Boolean.class, "true"),
+
+    /**
+     * Default post editor.
+     */
+    DEFAULT_EDITOR("default_editor", PostEditorType.class, PostEditorType.MARKDOWN.name());
 
     private final String value;
 

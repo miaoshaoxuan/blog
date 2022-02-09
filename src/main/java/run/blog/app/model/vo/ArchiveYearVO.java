@@ -3,7 +3,6 @@ package run.blog.app.model.vo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import run.blog.app.model.dto.post.BasePostMinimalDTO;
 
 import java.util.Comparator;
 import java.util.List;
@@ -21,7 +20,7 @@ public class ArchiveYearVO {
 
     private Integer year;
 
-    private List<BasePostMinimalDTO> posts;
+    private List<PostListVO> posts;
 
     public static class ArchiveComparator implements Comparator<ArchiveYearVO> {
 

@@ -1,8 +1,8 @@
 package run.blog.app.repository;
 
 import org.springframework.lang.NonNull;
-import run.blog.app.repository.base.BaseRepository;
 import run.blog.app.model.entity.User;
+import run.blog.app.repository.base.BaseRepository;
 
 import java.util.Optional;
 

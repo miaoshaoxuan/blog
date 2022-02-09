@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import run.blog.app.model.dto.base.OutputConverter;
 import run.blog.app.model.entity.User;
+import run.blog.app.model.enums.MFAType;
 
 import java.util.Date;
 
@@ -30,6 +31,8 @@ public class UserDTO implements OutputConverter<UserDTO, User> {
     private String avatar;
 
     private String description;
+
+    private MFAType mfaType;
 
     private Date createTime;
 

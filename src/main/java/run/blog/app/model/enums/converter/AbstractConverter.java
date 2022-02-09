@@ -1,8 +1,11 @@
 package run.blog.app.model.enums.converter;
 
 import run.blog.app.model.enums.ValueEnum;
+import run.blog.app.utils.ReflectionUtils;
 
 import javax.persistence.AttributeConverter;
+import java.lang.reflect.Type;
+import java.util.Objects;
 
 /**
  * Abstract converter.
@@ -16,8 +19,12 @@ public abstract class AbstractConverter<E extends ValueEnum<V>, V> implements At
 
     private final Class<E> clazz;
 
-    protected AbstractConverter(Class<E> clazz) {
-        this.clazz = clazz;
+    @SuppressWarnings("unchecked")
+    protected AbstractConverter() {
+        Type enumType = Objects.requireNonNull(
+                ReflectionUtils.getParameterizedTypeBySuperClass(AbstractConverter.class, this.getClass())
+        ).getActualTypeArguments()[0];
+        this.clazz = (Class<E>) enumType;
     }
 
     @Override

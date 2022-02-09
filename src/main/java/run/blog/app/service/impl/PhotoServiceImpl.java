@@ -8,28 +8,25 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import run.blog.app.repository.PhotoRepository;
-import run.blog.app.service.base.AbstractCrudService;
 import run.blog.app.model.dto.PhotoDTO;
 import run.blog.app.model.entity.Photo;
 import run.blog.app.model.params.PhotoParam;
 import run.blog.app.model.params.PhotoQuery;
 import run.blog.app.model.vo.PhotoTeamVO;
+import run.blog.app.repository.PhotoRepository;
 import run.blog.app.service.PhotoService;
+import run.blog.app.service.base.AbstractCrudService;
 import run.blog.app.utils.ServiceUtils;
 
 import javax.persistence.criteria.Predicate;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * PhotoService implementation class
  *
  * @author ryanwang
- * @date : 2019-03-14
+ * @date 2019-03-14
  */
 @Service
 public class PhotoServiceImpl extends AbstractCrudService<Photo, Integer> implements PhotoService {
@@ -41,12 +38,6 @@ public class PhotoServiceImpl extends AbstractCrudService<Photo, Integer> implem
         this.photoRepository = photoRepository;
     }
 
-    /**
-     * List photo dtos.
-     *
-     * @param sort sort
-     * @return all photos
-     */
     @Override
     public List<PhotoDTO> listDtos(Sort sort) {
         Assert.notNull(sort, "Sort info must not be null");
@@ -54,12 +45,6 @@ public class PhotoServiceImpl extends AbstractCrudService<Photo, Integer> implem
         return listAll(sort).stream().map(photo -> (PhotoDTO) new PhotoDTO().convertFrom(photo)).collect(Collectors.toList());
     }
 
-    /**
-     * Lists photo team vos.
-     *
-     * @param sort must not be null
-     * @return a list of photo team vo
-     */
     @Override
     public List<PhotoTeamVO> listTeamVos(Sort sort) {
         Assert.notNull(sort, "Sort info must not be null");
@@ -88,17 +73,19 @@ public class PhotoServiceImpl extends AbstractCrudService<Photo, Integer> implem
         return result;
     }
 
-    /**
-     * List photos by team.
-     *
-     * @param team team
-     * @param sort sort
-     * @return list of photos
-     */
     @Override
     public List<PhotoDTO> listByTeam(String team, Sort sort) {
         List<Photo> photos = photoRepository.findByTeam(team, sort);
         return photos.stream().map(photo -> (PhotoDTO) new PhotoDTO().convertFrom(photo)).collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<PhotoDTO> pageBy(Pageable pageable) {
+        Assert.notNull(pageable, "Page info must not be null");
+
+        Page<Photo> photos = photoRepository.findAll(pageable);
+
+        return photos.map(photo -> new PhotoDTO().convertFrom(photo));
     }
 
     @Override
@@ -119,9 +106,31 @@ public class PhotoServiceImpl extends AbstractCrudService<Photo, Integer> implem
         return create(photoParam.convertTo());
     }
 
+    @Override
+    public List<String> listAllTeams() {
+        return photoRepository.findAllTeams();
+    }
+
+    @Override
+    public List<PhotoDTO> replaceUrl(String oldUrl, String newUrl) {
+        List<Photo> photos = listAll();
+        List<Photo> replaced = new ArrayList<>();
+        photos.forEach(photo -> {
+            if (StringUtils.isNotEmpty(photo.getThumbnail())) {
+                photo.setThumbnail(photo.getThumbnail().replace(oldUrl, newUrl));
+            }
+            if (StringUtils.isNotEmpty(photo.getUrl())) {
+                photo.setUrl(photo.getUrl().replaceAll(oldUrl, newUrl));
+            }
+            replaced.add(photo);
+        });
+        List<Photo> updated = updateInBatch(replaced);
+        return updated.stream().map(photo -> (PhotoDTO) new PhotoDTO().convertFrom(photo)).collect(Collectors.toList());
+    }
+
     @NonNull
     private Specification<Photo> buildSpecByQuery(@NonNull PhotoQuery photoQuery) {
-        Assert.notNull(photoQuery, "Attachment query must not be null");
+        Assert.notNull(photoQuery, "Photo query must not be null");
 
         return (Specification<Photo>) (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new LinkedList<>();

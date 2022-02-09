@@ -1,7 +1,8 @@
 package run.blog.app.model.dto.base;
 
 import org.springframework.lang.NonNull;
-import run.blog.app.utils.BeanUtils;
+
+import static run.blog.app.utils.BeanUtils.updateProperties;
 
 /**
  * Converter interface for output DTO.
@@ -9,7 +10,7 @@ import run.blog.app.utils.BeanUtils;
  * <b>The implementation type must be equal to DTO type</b>
  *
  * @param <DTO>    the implementation class type
- * @param <DOMAIN> doamin type
+ * @param <DOMAIN> domain type
  * @author johnniang
  */
 public interface OutputConverter<DTO extends OutputConverter<DTO, DOMAIN>, DOMAIN> {
@@ -24,7 +25,7 @@ public interface OutputConverter<DTO extends OutputConverter<DTO, DOMAIN>, DOMAI
     @NonNull
     default <T extends DTO> T convertFrom(@NonNull DOMAIN domain) {
 
-        BeanUtils.updateProperties(domain, this);
+        updateProperties(domain, this);
 
         return (T) this;
     }
