@@ -52,7 +52,7 @@ spring:
     type: none
 logging:
   level:
-    run.halo.app: DEBUG
+    run.blog.app: DEBUG
     org.hibernate: ERROR
   path: ${user.home}/halo-test/logs
 

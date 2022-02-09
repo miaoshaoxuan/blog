@@ -53,7 +53,7 @@ spring:
     type: none
 logging:
   level:
-    run.halo.app: DEBUG
+    run.blog.app: DEBUG
     org.hibernate: INFO
     org.hibernate.type.descriptor.sql.BasicBinder: INFO
     org.hibernate.type.descriptor.sql.BasicExtractor: INFO

@@ -7,11 +7,11 @@ plugins {
 
 apply plugin: 'io.spring.dependency-management'
 
-group = 'run.halo.app'
+group = 'run.blog.app'
 archivesBaseName = 'halo'
 version = '1.0.2'
 sourceCompatibility = '1.8'
-description = 'Halo, personal blog system developed in Java.'
+description = 'blog, personal blog system developed in Java.'
 
 repositories {
     maven {
@@ -35,7 +35,7 @@ configurations {
 
 bootJar {
     manifest {
-        attributes('Implementation-Title': 'Halo Application',
+        attributes('Implementation-Title': 'blog Application',
                 'Implementation-Version': version)
     }
 }
