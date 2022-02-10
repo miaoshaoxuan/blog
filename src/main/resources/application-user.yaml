@@ -1,41 +1,61 @@
 server:
   port: 8090
-
-  # Response data gzip.
+  forward-headers-strategy: native
   compression:
     enabled: false
 spring:
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  output:
+    ansi:
+      enabled: always
   datasource:
-
-    # H2 database configuration.
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:file:~/.halo/db/halo
-    username: admin
-    password: 123456
+    type: com.zaxxer.hikari.HikariDataSource
 
     # MySQL database configuration.
-  #    driver-class-name: com.mysql.cj.jdbc.Driver
-  #    url: jdbc:mysql://127.0.0.1:3306/halodb?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-  #    username: root
-  #    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:15600/blog?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: blog
+    password: a2HnidpxMaG828XT
 
-  # H2 database console configuration.
   h2:
     console:
       settings:
-        web-allow-others: false
+        web-allow-others: true
       path: /h2-console
-      enabled: false
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+  flyway:
+    enabled: false
+  servlet:
+    multipart:
+      max-file-size: 10240MB
+      max-request-size: 10240MB
+  cache:
+    type: none
+management:
+  endpoints:
+    web:
+      base-path: /api/admin/actuator
+      exposure:
+        include: ['httptrace', 'metrics','env','logfile','health']
+logging:
+  level:
+    run.blog.app: DEBUG
+    org.hibernate: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO
+    org.hibernate.type.descriptor.sql.BasicExtractor: INFO
+  file:
+    path: ${user.home}/blog/logs
 
 halo:
-
-  # Your admin client path is https://your-domain/{admin-path}
-  admin-path: admin
-
-  # memory, level, redis
+  doc-disabled: false
+  production-env: false
+  auth-enabled: true
+  mode: development
+  workDir: ${user.home}/blog/
   cache: memory
-
-  # if cache = redis, you need to set the following options
-#  cache-redis-nodes: ['127.0.0.1:6380', '127.0.0.1:6379']
-#  cache-redis-password: 123456
-
