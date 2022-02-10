@@ -34,12 +34,12 @@ public class HaloConst {
     /**
      * Halo backup prefix.
      */
-    public final static String HALO_BACKUP_PREFIX = "halo-backup-";
+    public final static String HALO_BACKUP_PREFIX = "blog-backup-";
 
     /**
      * Halo data export prefix.
      */
-    public final static String HALO_DATA_EXPORT_PREFIX = "halo-data-export-";
+    public final static String HALO_DATA_EXPORT_PREFIX = "blog-data-export-";
 
     /**
      * Static pages pack prefix.

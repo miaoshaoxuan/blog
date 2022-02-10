@@ -120,7 +120,7 @@ public class StartedListener implements ApplicationListener<ApplicationStartedEv
         // Whether the blog has initialized
         Boolean isInstalled = optionService.getByPropertyOrDefault(PrimaryProperties.IS_INSTALLED, Boolean.class, false);
         try {
-            String themeClassPath = haloProperties.getWorkDir() + ThemeService.THEME_FOLDER;
+            String themeClassPath = ResourceUtils.CLASSPATH_URL_PREFIX + ThemeService.THEME_FOLDER;
 
             URI themeUri = ResourceUtils.getURL(themeClassPath).toURI();
 
