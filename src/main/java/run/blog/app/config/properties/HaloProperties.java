@@ -51,17 +51,17 @@ public class HaloProperties {
     /**
      * Work directory.
      */
-    private String workDir = ensureSuffix(USER_HOME, FILE_SEPARATOR) + ".halo" + FILE_SEPARATOR;
+    private String workDir = ensureSuffix(USER_HOME, FILE_SEPARATOR) + ".blog" + FILE_SEPARATOR;
 
     /**
      * Halo backup directory.(Not recommended to modify this config);
      */
-    private String backupDir = ensureSuffix(TEMP_DIR, FILE_SEPARATOR) + "halo-backup" + FILE_SEPARATOR;
+    private String backupDir = ensureSuffix(TEMP_DIR, FILE_SEPARATOR) + "blog-backup" + FILE_SEPARATOR;
 
     /**
      * Halo data export directory.
      */
-    private String dataExportDir = ensureSuffix(TEMP_DIR, FILE_SEPARATOR) + "halo-data-export" + FILE_SEPARATOR;
+    private String dataExportDir = ensureSuffix(TEMP_DIR, FILE_SEPARATOR) + "blog-data-export" + FILE_SEPARATOR;
 
     /**
      * Upload prefix.
