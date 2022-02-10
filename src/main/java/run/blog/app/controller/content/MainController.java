@@ -1,6 +1,8 @@
 package run.blog.app.controller.content;
 
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -41,6 +43,10 @@ public class MainController {
 
     private final HaloProperties haloProperties;
 
+    @Value("${server.servlet.context-path:}")
+    @Setter
+    private String contextPath;
+
     public MainController(UserService userService, OptionService optionService, HaloProperties haloProperties) {
         this.userService = userService;
         this.optionService = optionService;
@@ -49,7 +55,7 @@ public class MainController {
 
     @GetMapping("${halo.admin-path:admin}")
     public void admin(HttpServletResponse response) throws IOException {
-        String adminIndexRedirectUri = HaloUtils.ensureBoth(haloProperties.getAdminPath(), HaloUtils.URL_SEPARATOR) + INDEX_REDIRECT_URI;
+        String adminIndexRedirectUri = contextPath + HaloUtils.ensureBoth(haloProperties.getAdminPath(), HaloUtils.URL_SEPARATOR) + INDEX_REDIRECT_URI;
         response.sendRedirect(adminIndexRedirectUri);
     }
 

@@ -56,12 +56,12 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: INFO
     org.hibernate.type.descriptor.sql.BasicExtractor: INFO
   file:
-    path: ${user.home}/halo-dev/logs
+    path: ${user.home}/blog-dev/logs
 
 halo:
   doc-disabled: false
   production-env: false
   auth-enabled: true
   mode: development
-  workDir: ${user.home}/halo-dev/
+  workDir: ${user.home}/blog-dev/
   cache: memory

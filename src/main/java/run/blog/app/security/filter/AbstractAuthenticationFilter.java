@@ -1,7 +1,9 @@
 package run.blog.app.security.filter;
 
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.AntPathMatcher;
@@ -56,6 +58,10 @@ public abstract class AbstractAuthenticationFilter extends OncePerRequestFilter 
 
     private Set<String> urlPatterns = new LinkedHashSet<>();
 
+    @Value("${server.servlet.context-path:}")
+    @Setter
+    private String contextPath;
+
     AbstractAuthenticationFilter(HaloProperties haloProperties,
             OptionService optionService,
             AbstractStringCacheStore cacheStore,
@@ -84,9 +90,9 @@ public abstract class AbstractAuthenticationFilter extends OncePerRequestFilter 
         Assert.notNull(request, "Http servlet request must not be null");
 
         // check white list
-        boolean result = excludeUrlPatterns.stream().anyMatch(p -> antPathMatcher.match(p, urlPathHelper.getRequestUri(request)));
+        boolean result = excludeUrlPatterns.stream().anyMatch(p -> antPathMatcher.match(contextPath + p, urlPathHelper.getRequestUri(request)));
 
-        return result || urlPatterns.stream().noneMatch(p -> antPathMatcher.match(p, urlPathHelper.getRequestUri(request)));
+        return result || urlPatterns.stream().noneMatch(p -> antPathMatcher.match(contextPath + p, urlPathHelper.getRequestUri(request)));
 
     }
 
